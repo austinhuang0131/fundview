@@ -26,25 +26,27 @@ function Scatterplot({ data, width, height }: ScatterplotProps) {
         // Clear previous chart
         d3.select(ref.current).selectAll("*").remove();
 
-        // Define the horizontal scale.
+        // Calculate the y-axis dynamic range
+        const yMin = d3.min(data, (d) => d.holdings)!;
+        const yMax = d3.max(data, (d) => d.holdings)!;
+        const yRange = yMax - yMin;
+
+        // Define the horizontal scale
         const x = d3.scaleBand()
             .domain([...new Set(data.map((d) => d.x))])
             .range([margin.left, width - margin.right]);
 
-        // Define the vertical scale.
+        // Define the vertical scale with 10% dynamic scaling
         const y = d3.scaleLinear()
-            .domain([
-                d3.min(data, (d) => d.holdings)! - 5, // Extend below minimum
-                d3.max(data, (d) => d.holdings)!,
-            ])
+            .domain([yMin - 0.1 * yRange, yMax]) // 10% scaling below min
             .range([height - margin.bottom, margin.top]);
 
-        // Define the color scale.
+        // Define the color scale
         const color = d3.scaleOrdinal<string>()
             .domain([...new Set(data.map((d) => d.stock))])
             .range(d3.schemeCategory10);
 
-        // Create the container SVG.
+        // Create the container SVG
         const svg = d3.select(ref.current)
             .append("g")
             .attr("width", width)
@@ -52,17 +54,17 @@ function Scatterplot({ data, width, height }: ScatterplotProps) {
             .attr("viewBox", `0 0 ${width} ${height}`)
             .attr("style", "max-width: 100%; height: auto;");
 
-        // Add the x-axis.
+        // Add the x-axis
         svg.append("g")
             .attr("transform", `translate(0,${height - margin.bottom})`)
             .call(d3.axisBottom(x));
 
-        // Add the y-axis.
+        // Add the y-axis
         svg.append("g")
             .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y));
 
-        // Add lines connecting points for each stock.
+        // Add lines connecting points for each stock
         const line = d3
             .line<DataPoint>()
             .x((d) => (x(d.x) || 0) + x.bandwidth() / 2)
@@ -79,7 +81,7 @@ function Scatterplot({ data, width, height }: ScatterplotProps) {
             .attr("stroke-width", 2)
             .attr("d", ([, values]) => line(values.sort((a, b) => a.x.localeCompare(b.x)))!);
 
-        // Create a tooltip div (hidden by default).
+        // Create a tooltip div (hidden by default)
         const tooltip = d3
             .select("body")
             .append("div")
@@ -92,7 +94,7 @@ function Scatterplot({ data, width, height }: ScatterplotProps) {
             .style("pointer-events", "none")
             .style("visibility", "hidden");
 
-        // Add circles for data points with hover interaction.
+        // Add circles for data points with hover interaction
         svg.append("g")
             .selectAll("circle")
             .data(data)
@@ -114,7 +116,7 @@ function Scatterplot({ data, width, height }: ScatterplotProps) {
                 tooltip.style("visibility", "hidden");
             });
 
-        // Cleanup tooltip on unmount.
+        // Cleanup tooltip on unmount
         return () => {
             tooltip.remove();
         };
