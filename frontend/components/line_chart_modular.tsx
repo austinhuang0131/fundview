@@ -102,6 +102,11 @@ function Scatterplot({ data, width, height, groupKey, title }: ScatterplotProps)
             .on("mouseover", (event, d) => {
                 d3.select(event.target).attr("stroke", "black").attr("stroke-width", 2);
             })
+            .on("mousemove", (event) => {
+                tooltip
+                    .style("top", `${event.pageY - 10}px`)
+                    .style("left", `${event.pageX + 10}px`);
+            })
             .on("mouseout", (event) => {
                 d3.select(event.target).attr("stroke", "none");
             });
