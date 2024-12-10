@@ -28,3 +28,7 @@ Thumbs.db
 
 # Environment variables
 .env
+
+# SQL
+*.tsv
+database/EdgarDataSource/FORM13F_metadata.json
