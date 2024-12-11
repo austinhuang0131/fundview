@@ -18,9 +18,10 @@ interface LineChartProps {
     height: number; // Chart height, absolute value
     groupKey: string; // Key to group lines (e.g., "stock", "fund", "industry")
     title?: string; // Optional chart title
+    quarters?: string[]; // filter by quarters
 }
 
-function LineChart({ data, width, height, groupKey, title }: LineChartProps) {
+function LineChart({ data, width, height, groupKey, title, quarters }: LineChartProps) {
     const ref = useRef<SVGSVGElement>(null);
     const { width: windowWidth } = useWindowDimensions();
     width = width * windowWidth;
@@ -38,7 +39,7 @@ function LineChart({ data, width, height, groupKey, title }: LineChartProps) {
 
         // Define scales
         const x = d3.scaleBand()
-            .domain([...new Set(data.map((d) => d.time))])
+            .domain(quarters ?? [...new Set(data.map((d) => d.time))])
             .range([margin.left, width - margin.right]);
 
         const y = d3.scaleLinear()
@@ -81,6 +82,9 @@ function LineChart({ data, width, height, groupKey, title }: LineChartProps) {
         const line = d3.line<DataPoint>()
             .x((d) => (x(d.time) || 0) + x.bandwidth() / 2)
             .y((d) => y(d.holdings));
+
+        if (quarters)
+            data = data.filter(d => quarters.indexOf(d.time) > -1);
 
         const groupedData = d3.group(data, (d) => d[groupKey] as string);
 
