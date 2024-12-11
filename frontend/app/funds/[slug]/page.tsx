@@ -5,12 +5,19 @@ import LineChart, { DataPoint } from "@/components/line_chart_modular";
 import { FundDataPoint, fetchTestData } from "@/lib/api";
 import { use, useEffect, useState } from "react";
 
-const processDataForScatterplot = (data: FundDataPoint[]) => {
+const processDataForLineChart = (data: FundDataPoint[]) => {
   return data.map(d => ({
     time: d.reporting_date,
     holdings: d.value,
     stock: d.name_of_issuer
   })).sort((a, b) => a.time < b.time ? 1 : -1) as DataPoint[];
+};
+
+const processDataForBarChart = (data: FundDataPoint[], quarter: string) => {
+  return data.filter(d => d.reporting_date == quarter).map(d => ({
+    holdingAmount: d.value,
+    stock: d.name_of_issuer
+  }));
 };
 
 const getQuarters = (quarters: string[], indices: number[]) => {
@@ -46,7 +53,6 @@ export default function FundDetail({
         setQuarters(q);
         quarterState[1]([q.length - 1]);
         quarterRangeState[1]([0, q.length - 1]);
-        console.log(q);
       })
   }, []);
   
@@ -66,6 +72,10 @@ export default function FundDetail({
             <Slider quarters={quarters}
               state={quarterState} range={false} />
           </div>
+          <Barchart
+            width={0.45} height={400} 
+            data={processDataForBarChart(data, quarters[quarterState[0][0]])}
+          />
         </div>
         <div style={{ width: "50%", display: "inline-block" }}>
           <div style={{ width: "70%", height: "100px", marginLeft: "auto", marginRight: "auto", marginTop: "50px" }}>
@@ -74,7 +84,7 @@ export default function FundDetail({
           </div>
           <LineChart
             width={0.45} height={400} title="Sample text" groupKey="stock"
-            data={processDataForScatterplot(data)} quarters={getQuarters(quarters, quarterRangeState[0])}
+            data={processDataForLineChart(data)} quarters={getQuarters(quarters, quarterRangeState[0])}
           />
         </div>
       </div>
