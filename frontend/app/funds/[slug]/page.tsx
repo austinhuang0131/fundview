@@ -5,26 +5,22 @@ import Scatterplot, { DataPoint } from "@/components/line_chart_modular";
 import { FundDataPoint, fetchTestData } from "@/lib/api";
 import { use, useEffect, useState } from "react";
 
-const dateToQuarter = (date: string) => {
-  const matches = date.match(/^(3\d-\w{3})-(\d{4})$/)!;
-  switch (matches[1]) {
-    case "31-DEC":
-      return `${matches[2]} Q4`;
-    case "30-SEP":
-      return `${matches[2]} Q3`;
-    case "30-JUN":
-      return `${matches[2]} Q2`;
-    default:
-      return `${matches[2]} Q1`;
-  }
-};
-
 const processDataForScatterplot = (data: FundDataPoint[]) => {
   return data.map(d => ({
-    time: dateToQuarter(d.reporting_date),
+    time: d.reporting_date,
     holdings: d.value,
     stock: d.name_of_issuer
   })).sort((a, b) => a.time < b.time ? 1 : -1) as DataPoint[];
+};
+
+const getQuarters = (quarters: string[], indices: number[]) => {
+  switch (indices.length) {
+    case 0:
+      return [];
+    case 1:
+      return [quarters[indices[0]]];
+      return quarters.slice(indices[0], indices[1] + 1);
+  }
 };
 
 export default function FundDetail({

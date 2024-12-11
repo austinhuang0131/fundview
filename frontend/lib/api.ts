@@ -6,6 +6,20 @@ export type FundDataPoint = {
   name_of_issuer: string
 }
 
+const dateToQuarter = (date: string) => {
+  const matches = date.match(/^(3\d-\w{3})-(\d{4})$/)!;
+  switch (matches[1]) {
+    case "31-DEC":
+      return `${matches[2]} Q4`;
+    case "30-SEP":
+      return `${matches[2]} Q3`;
+    case "30-JUN":
+      return `${matches[2]} Q2`;
+    default:
+      return `${matches[2]} Q1`;
+  }
+};
+
 export async function fetchHelloData() {
   const response = await fetch("http://localhost:8000/hello");
   if (!response.ok) {
@@ -20,13 +34,15 @@ export async function fetchTestData() {
     .map(y => [`31-DEC-${y}`, `30-SEP-${y}`, `30-JUN-${y}`, `31-MAR-${y}`])
     .reduce((a, b) => [...a, ...b]);
   const data: FundDataPoint[] =
-    ["Pear Computers", "Dino Oil", "Money Bank"].map(name_of_issuer => dates.map(reporting_date => {
+    ["Pear Computers", "Dino Oil", "Money Bank"].map(name_of_issuer => dates.map(d => {
       return {
-        reporting_date,
+        reporting_date: dateToQuarter(d),
         value: r(),
         name_of_issuer
       } as FundDataPoint;
     }))
-    .reduce((a, b) => [...a, ...b]);
-  return data;
+    .reduce((a, b) => [...a, ...b])
+    .sort((a, b) => a.reporting_date > b.reporting_date ? 1 : -1);
+  const quarters = [...new Set(data.map(d => d.reporting_date))];
+  return {data, quarters};
 }
