@@ -27,7 +27,7 @@ function LineChart({ data, width, height, groupKey, title, quarters }: LineChart
     width = width * windowWidth;
 
     useEffect(() => {
-        const margin = { top: 50, bottom: 40, left: 50, right: 20 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 40 };
 
         // Clear previous chart
         d3.select(ref.current).selectAll("*").remove();
