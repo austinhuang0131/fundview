@@ -1,7 +1,7 @@
 "use client"; 
 
-import SingleSlider from "@/components/SingleSlider";
-import Scatterplot, { DataPoint } from "@/components/line_chart_modular";
+import Slider from "@/components/Slider";
+import LineChart, { DataPoint } from "@/components/line_chart_modular";
 import { FundDataPoint, fetchTestData } from "@/lib/api";
 import { use, useEffect, useState } from "react";
 
@@ -72,8 +72,9 @@ export default function FundDetail({
             <Slider quarters={quarters}
               state={quarterRangeState} range={true} />
           </div>
+          <LineChart
             width={0.45} height={400} title="Sample text" groupKey="stock"
-            data={processDataForScatterplot(data)}
+            data={processDataForScatterplot(data)} quarters={getQuarters(quarters, quarterRangeState[0])}
           />
         </div>
       </div>
