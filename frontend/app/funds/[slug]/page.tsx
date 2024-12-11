@@ -74,6 +74,7 @@ export default function FundDetail({
             <Slider quarters={quarters}
               state={quarterState} range={false} />
           </div>
+          <h2>Top holdings during {getQuarters(quarters, quarterState[0])[0]}</h2>
           <Barchart
             width={0.45} height={400} 
             data={processDataForBarChart(data)} quarter={getQuarters(quarters, quarterState[0])[0]}
@@ -84,8 +85,11 @@ export default function FundDetail({
             <Slider quarters={quarters}
               state={quarterRangeState} range={true} />
           </div>
+          <h2>Trend of top holding between {
+            getQuarters(quarters, quarterRangeState[0]).filter((_, i, a) => i == 0 || i == a.length - 1).join(" and ")
+          }</h2>
           <LineChart
-            width={0.45} height={400} title="Sample text" groupKey="stock"
+            width={0.45} height={400} groupKey="stock"
             data={processDataForLineChart(data)} quarters={getQuarters(quarters, quarterRangeState[0])}
           />
         </div>
