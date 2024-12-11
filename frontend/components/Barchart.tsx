@@ -28,9 +28,6 @@ function Barchart(props: { data: {stock: string, holdingAmount: number}[], width
 
         // Create SVG container
         const svg = d3.select(ref.current)
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -80,7 +77,7 @@ function Barchart(props: { data: {stock: string, holdingAmount: number}[], width
         .attr("width", x.bandwidth())
         .attr("height", d => height - y(d.holdingAmount))
         .attr("fill", "steelblue");
-    }, [props.data, props.height, props.width]);
+    }, [props.data, props.height, props.width, windowWidth]);
 
     return <svg width={canvasWidth} height={props.height} id="barchart" ref={ref} />;
 };
