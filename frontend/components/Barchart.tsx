@@ -6,7 +6,10 @@ import useWindowDimensions from "@/hooks/useWindowDimensions";
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
-function Barchart(props: { data: {stock: string, holdingAmount: number}[], width: number, height: number}) {
+function Barchart(props: {
+    data: {stock: string, holdingAmount: number, time: string}[],
+    width: number, height: number, quarter: string
+}) {
     const ref = useRef(null);
     const { width: windowWidth } = useWindowDimensions();
     const canvasWidth = props.width * windowWidth;
@@ -14,6 +17,7 @@ function Barchart(props: { data: {stock: string, holdingAmount: number}[], width
     useEffect(() => {
         // Sort by holdingAmount in descending order and take the top 5
         const top5Data = props.data
+            .filter(d => d.time == props.quarter)
             .sort((a, b) => b.holdingAmount - a.holdingAmount)
             .slice(0, 5);
 
@@ -63,7 +67,7 @@ function Barchart(props: { data: {stock: string, holdingAmount: number}[], width
         .attr("y", d => y(d.holdingAmount))
         .attr("width", x.bandwidth())
         .attr("height", d => height - y(d.holdingAmount))
-        .attr("fill", (d, i) => color(`${i}`)); // Assign color based on index
+        .attr("fill", (d) => color(d.stock)); // Assign color based on stock name
 
         
         // Draw bars

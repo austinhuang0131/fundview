@@ -14,10 +14,11 @@ const processDataForLineChart = (data: FundDataPoint[]) => {
   })).sort((a, b) => a.time < b.time ? 1 : -1) as DataPoint[];
 };
 
-const processDataForBarChart = (data: FundDataPoint[], quarter: string) => {
-  return data.filter(d => d.reporting_date == quarter).map(d => ({
+const processDataForBarChart = (data: FundDataPoint[]) => {
+  return data.map(d => ({
     holdingAmount: d.value,
-    stock: d.name_of_issuer
+    stock: d.name_of_issuer,
+    time: d.reporting_date
   }));
 };
 
@@ -75,7 +76,7 @@ export default function FundDetail({
           </div>
           <Barchart
             width={0.45} height={400} 
-            data={processDataForBarChart(data, quarters[quarterState[0][0]])}
+            data={processDataForBarChart(data)} quarter={getQuarters(quarters, quarterState[0])[0]}
           />
         </div>
         <div style={{ width: "50%", display: "inline-block" }}>
