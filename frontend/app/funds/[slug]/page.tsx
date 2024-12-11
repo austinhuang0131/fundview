@@ -19,6 +19,7 @@ const getQuarters = (quarters: string[], indices: number[]) => {
       return [];
     case 1:
       return [quarters[indices[0]]];
+    default:
       return quarters.slice(indices[0], indices[1] + 1);
   }
 };
@@ -33,11 +34,19 @@ export default function FundDetail({
   const [data, setData] = useState([] as FundDataPoint[]);
   const [isLoading, setLoading] = useState(true);
 
+  const [quarters, setQuarters] = useState([] as string[]);
+  const quarterState = useState([0]);
+  const quarterRangeState = useState([0, 0]);
+
   useEffect(() => {
     fetchTestData()
-      .then((data) => {
-        setData(data)
-        setLoading(false)
+      .then(({data, quarters: q}) => {
+        setData(data);
+        setLoading(false);
+        setQuarters(q);
+        quarterState[1]([q.length - 1]);
+        quarterRangeState[1]([0, q.length - 1]);
+        console.log(q);
       })
   }, []);
   
@@ -54,11 +63,15 @@ export default function FundDetail({
       <div style={{ width: "100%" }}>
         <div style={{ width: "50%", display: "inline-block" }}>
           <div style={{ width: "70%", height: "100px", marginLeft: "auto", marginRight: "auto", marginTop: "50px" }}>
-            <SingleSlider quarters={[...new Set(data.map(d => dateToQuarter(d.reporting_date)))]} />
+            <Slider quarters={quarters}
+              state={quarterState} range={false} />
           </div>
         </div>
         <div style={{ width: "50%", display: "inline-block" }}>
-          <Scatterplot
+          <div style={{ width: "70%", height: "100px", marginLeft: "auto", marginRight: "auto", marginTop: "50px" }}>
+            <Slider quarters={quarters}
+              state={quarterRangeState} range={true} />
+          </div>
             width={0.45} height={400} title="Sample text" groupKey="stock"
             data={processDataForScatterplot(data)}
           />

@@ -4,9 +4,12 @@ import { Range, getTrackBackground } from "react-range";
 const MIN = 0;
 const STEP = 1;
 
-function SingleSlider({ quarters }: { quarters: string[] }) {
+function Slider(
+    { quarters, state, range }:
+        { quarters: string[], state: [number[], React.Dispatch<React.SetStateAction<number[]>>], range: boolean }
+) {
     const MAX = quarters.length - 1;
-    const [values, setValues] = React.useState([MAX]);
+    const [values, setValues] = state;
     return (
         <div
         style={{
@@ -41,7 +44,7 @@ function SingleSlider({ quarters }: { quarters: string[] }) {
                     borderRadius: "4px",
                     background: getTrackBackground({
                         values,
-                        colors: ["#548BF4", "#ccc"],
+                        colors: range ? ["#ccc", "#548BF4", "#ccc"] : ["#548BF4", "#ccc"],
                         min: MIN,
                         max: MAX,
                     }),
@@ -52,7 +55,7 @@ function SingleSlider({ quarters }: { quarters: string[] }) {
                 </div>
             </div>
             )}
-            renderThumb={({ props }) => (
+            renderThumb={({ index, props }) => (
             <div
                 {...props}
                 key={props.key}
@@ -71,7 +74,8 @@ function SingleSlider({ quarters }: { quarters: string[] }) {
                 style={{
                     position: "absolute",
                     top: "-35px",
-                    left: "10px",
+                    right: index == 0 ? "10px" : "unset",
+                    left: index == 1 ? "10px" : "unset",
                     color: "#fff",
                     fontWeight: "bold",
                     fontSize: "14px",
@@ -82,7 +86,7 @@ function SingleSlider({ quarters }: { quarters: string[] }) {
                     whiteSpace: "nowrap"
                 }}
                 >
-                {quarters[values[0]]}
+                {quarters[values[index]]}
                 </div>
             </div>
             )}
@@ -91,4 +95,4 @@ function SingleSlider({ quarters }: { quarters: string[] }) {
     );
 };
 
-export default SingleSlider;
+export default Slider;
