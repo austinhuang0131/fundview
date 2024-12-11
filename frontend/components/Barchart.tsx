@@ -55,8 +55,10 @@ function Barchart(props: {
         .call(d3.axisLeft(y));
 
         // Define a color scale
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
-
+        const color = d3.scaleOrdinal<string>()
+            .domain(props.data.map(d => d.stock))
+            .range(d3.schemeCategory10);
+        
         // Draw bars with different colors
         svg.selectAll(".bar")
         .data(top5Data)
