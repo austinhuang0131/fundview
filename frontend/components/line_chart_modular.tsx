@@ -2,10 +2,11 @@
 
 "use client";
 
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
-interface DataPoint {
+export interface DataPoint {
     time: string; // Time period (e.g., "2023 Q1")
     holdings: number; // Holdings value
     [key: string]: string | number; // Flexible keys for groupings
@@ -13,14 +14,16 @@ interface DataPoint {
 
 interface LineChartProps {
     data: DataPoint[]; // Dataset for the chart
-    width: number; // Chart width
-    height: number; // Chart height
+    width: number; // Chart width, as a multiplier of window
+    height: number; // Chart height, absolute value
     groupKey: string; // Key to group lines (e.g., "stock", "fund", "industry")
     title?: string; // Optional chart title
 }
 
 function LineChart({ data, width, height, groupKey, title }: LineChartProps) {
     const ref = useRef<SVGSVGElement>(null);
+    const { width: windowWidth } = useWindowDimensions();
+    width = width * windowWidth;
 
     useEffect(() => {
         const margin = { top: 50, bottom: 40, left: 50, right: 20 };
