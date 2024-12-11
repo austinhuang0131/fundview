@@ -1,5 +1,6 @@
 "use client"; 
 
+import Barchart from "@/components/Barchart";
 import Slider from "@/components/Slider";
 import LineChart, { DataPoint } from "@/components/line_chart_modular";
 import { FundDataPoint, fetchTestData } from "@/lib/api";
@@ -68,7 +69,7 @@ export default function FundDetail({
       <p>View detailed information about fund {slug}.</p>
       <div style={{ width: "100%" }}>
         <div style={{ width: "50%", display: "inline-block" }}>
-          <div style={{ width: "70%", height: "100px", marginLeft: "auto", marginRight: "auto", marginTop: "50px" }}>
+          <div style={{ width: "70%", marginLeft: "auto", marginRight: "auto", marginTop: "50px" }}>
             <Slider quarters={quarters}
               state={quarterState} range={false} />
           </div>
@@ -78,7 +79,7 @@ export default function FundDetail({
           />
         </div>
         <div style={{ width: "50%", display: "inline-block" }}>
-          <div style={{ width: "70%", height: "100px", marginLeft: "auto", marginRight: "auto", marginTop: "50px" }}>
+          <div style={{ width: "70%", marginLeft: "auto", marginRight: "auto", marginTop: "50px" }}>
             <Slider quarters={quarters}
               state={quarterRangeState} range={true} />
           </div>
