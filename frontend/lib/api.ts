@@ -1,7 +1,8 @@
 export type FundDataPoint = {
   reporting_date: string, // for now, could be a date project
   value: number,
-  name_of_issuer: string
+  name_of_issuer: string,
+  industry?: string
 }
 
 export type StockDataPoint = {

@@ -2,6 +2,7 @@
 
 "use client";
 
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
@@ -34,8 +35,10 @@ type Datum = {
 };
 
 function RadarChart(r: null, data: DataInput, options: Cfg | undefined) {
+	const { width: windowWidth } = useWindowDimensions();
+
 	const cfg = {
-        w: options?.w ?? 600,				//Width of the circle
+        w: (options?.w ?? 1) * windowWidth,				//Width of the circle
         h: options?.h ?? 600,				//Height of the circle
         margin: options?.margin ?? {top: 20, right: 20, bottom: 20, left: 20}, //The margins of the SVG
         levels: options?.levels ?? 3,				//How many levels or inner circles should there be drawn
