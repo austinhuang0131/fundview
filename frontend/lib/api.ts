@@ -14,15 +14,15 @@ export type StockDataPoint = {
 
 const dateToQuarter = (date: string) => {
   const matches = date.match(/^(\d{4})-(\d{2})-(\d{2})/)!;
-  switch (matches[1]) {
+  switch (matches[2]) {
     case "12":
-      return `${matches[2]} Q4`;
+      return `${matches[1]} Q4`;
     case "09":
-      return `${matches[2]} Q3`;
+      return `${matches[1]} Q3`;
     case "06":
-      return `${matches[2]} Q2`;
+      return `${matches[1]} Q2`;
     default:
-      return `${matches[2]} Q1`;
+      return `${matches[1]} Q1`;
   }
 };
 
@@ -65,7 +65,8 @@ export async function fetchFundHoldings(cik: string) {
   return response.json();
 }
 
-function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters: string[] } {
+function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters: string[] , filingManager: string} {
+  const filingManager = apiData[0].FILINGMANAGER_NAME;
   console.log(apiData[0].REPORTCALENDARORQUARTER);
   const processedData: FundDataPoint[] = apiData.map(item => ({
     reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
@@ -78,8 +79,9 @@ function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters:
 
   // Get unique quarters
   const quarters = [...new Set(processedData.map(d => d.reporting_date))];
+  console.log(quarters);
 
-  return { data: processedData, quarters };
+  return { data: processedData, quarters, filingManager};
 }
 
 // Fetch stock data by slug and process it

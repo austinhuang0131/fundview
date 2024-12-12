@@ -27,7 +27,7 @@ function Barchart(props: {
             top5Data = top5Data.slice(0, 5);
 
         // Set up dimensions and margins
-        const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 35 };
         const width = canvasWidth - margin.left - margin.right;
         const height = props.height - margin.top - margin.bottom;
 
@@ -35,7 +35,7 @@ function Barchart(props: {
         const x = d3.scaleBand()
             .domain(top5Data.map(d => d.stock))
             .range([0, width])
-            .padding(0.1);
+            .padding(0.2);
 
         const y = d3.scaleLinear()
             .domain([0, d3.max(props.data, d => d.holdingAmount)!])
@@ -63,6 +63,7 @@ function Barchart(props: {
             .call(d3.axisBottom(x));
 
         axesContainer.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y));
 
         // Define a color scale
