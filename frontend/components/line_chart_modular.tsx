@@ -48,8 +48,16 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
             .domain([yMin - 0.1 * yRange, yMax]) // Scale 10% below min
             .range([height - margin.bottom, margin.top]);
 
+        if (companies.length == 0)
+            companies = [...new Set(
+                data
+                    .filter(d => d.time == quarters[quarters.length - 1])
+                    .sort((a, b) => b.holdings - a.holdings).map(d => d[groupKey] as string)
+            )].slice(0, 10);
+        data = data.filter(d => companies.indexOf(d[groupKey] as string) > -1);
+
         const color = d3.scaleOrdinal<string>()
-            .domain([...new Set(data.map((d) => d[groupKey] as string))])
+            .domain(companies)
             .range(d3.schemeCategory10);
 
         // Create the SVG container
@@ -100,13 +108,6 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
 
         if (quarters.length > 0)
             data = data.filter(d => quarters.indexOf(d.time) > -1);
-        if (companies.length == 0)
-            companies = [...new Set(
-                data
-                    .filter(d => d.time == quarters[quarters.length - 1])
-                    .sort((a, b) => b.holdings - a.holdings).map(d => d[groupKey] as string)
-            )].slice(0, 10);
-        data = data.filter(d => companies.indexOf(d[groupKey] as string) > -1);
 
         const groupedData = Array.from(
             d3.group(data, (d: DataPoint) => d[groupKey] as string)
