@@ -6,6 +6,12 @@ export type FundDataPoint = {
   name_of_issuer: string
 }
 
+export type StockDataPoint = {
+  reporting_date: string, // for now, could be a date project
+  value: number,
+  name_of_fund: string
+}
+
 const dateToQuarter = (date: string) => {
   const matches = date.match(/^(\d{4})-(\d{2})-(\d{2})/)!;
   switch (matches[1]) {
@@ -47,12 +53,12 @@ export async function fetchHelloData() {
 //   return {data, quarters};
 // }
 
-export async function fetchData(slug: string) {
+export async function fetchFundData(slug: string) {
   return processFundHoldings(await fetchFundHoldings(slug));
 }
 
 export async function fetchFundHoldings(cik: string) {
-  const response = await fetch(`/api/fundholdings/${cik}`);
+  const response = await fetch(`/api/cusip/${cik}`);
   if (!response.ok) {
     throw new Error("Failed to fetch fund holdings data");
   }
@@ -65,6 +71,37 @@ function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters:
     reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
     value: item.VALUE,
     name_of_issuer: item.NAMEOFISSUER
+  }));
+
+  // Sort the data by reporting date
+  processedData.sort((a, b) => a.reporting_date.localeCompare(b.reporting_date));
+
+  // Get unique quarters
+  const quarters = [...new Set(processedData.map(d => d.reporting_date))];
+
+  return { data: processedData, quarters };
+}
+
+// Fetch stock data by slug and process it
+export async function fetchStockData(slug: string) {
+  return processStockHoldings(await fetchStockHoldings(slug));
+}
+
+// Fetch raw stock holdings data by CUSIP
+export async function fetchStockHoldings(cusip: string) {
+  const response = await fetch(`/api/cusip/${cusip}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch stock holdings data");
+  }
+  return response.json();
+}
+
+// Process stock holdings data into a usable format
+function processStockHoldings(apiData: any[]): { data: StockDataPoint[]; quarters: string[] } {
+  const processedData: StockDataPoint[] = apiData.map((item) => ({
+    reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
+    value: item.VALUE,
+    name_of_fund: item.FILINGMANAGER_NAME,
   }));
 
   // Sort the data by reporting date

@@ -1,43 +1,47 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
-import { fetchHelloData } from "../../lib/api";
+import Link from "next/link";
 
-export default function StockOverview() {
-  
-  const [data, setData] = useState<string | null>(null);
+interface CUSIPData {
+  CUSIP: string;
+  name_of_issuer: string; // Update this based on your database schema
+}
+
+async function fetchCUSIPs() {
+  const response = await fetch("/api/cusip");
+  if (!response.ok) {
+    throw new Error("Failed to fetch CUSIPs");
+  }
+  return response.json();
+}
+
+export default function StocksPage() {
+  const [cusips, setCusips] = useState<CUSIPData[]>([]);
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const data = await fetchHelloData();
-        setData(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    getData();
+    fetchCUSIPs()
+        .then(setCusips)
+        .catch((error) => console.error("Error fetching CUSIPs:", error))
+        .finally(() => setLoading(false));
   }, []);
 
+  if (isLoading) return <p>Loading...</p>;
+  if (!cusips.length) return <p>No CUSIPs available.</p>;
+
   return (
-    <div>
-      <h1>Market Overview</h1>
-      {data ? <h1>{data}</h1> : <p>Loading data...</p>}
-      <p>
-        Get insights into the latest market trends, top gainers, and losers.
-      </p>
       <div>
-        <h2>Top Gainers</h2>
+        <h1>Available CUSIPs</h1>
         <ul>
-          <li>Stock A - +5%</li>
-          <li>Stock B - +3%</li>
-        </ul>
-        <h2>Top Losers</h2>
-        <ul>
-          <li>Stock X - -4%</li>
-          <li>Stock Y - -2%</li>
+          {cusips.map((cusip) => (
+              <li key={cusip.CUSIP}>
+                <Link href={`/stocks/${cusip.CUSIP}`}>
+                  {cusip.name_of_issuer} ({cusip.CUSIP})
+                </Link>
+              </li>
+          ))}
         </ul>
       </div>
-    </div>
   );
 }
