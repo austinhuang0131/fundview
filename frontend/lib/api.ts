@@ -1,5 +1,3 @@
-import { randomNormal } from "d3"; // for sample data
-
 export type FundDataPoint = {
   reporting_date: string, // for now, could be a date project
   value: number,
@@ -11,6 +9,12 @@ export type StockDataPoint = {
   value: number,
   name_of_fund: string
 }
+
+export type CIKNAME = {
+  CIK: string,
+  NAME: string
+}
+
 
 const dateToQuarter = (date: string) => {
   const matches = date.match(/^(\d{4})-(\d{2})-(\d{2})/)!;
@@ -26,6 +30,14 @@ const dateToQuarter = (date: string) => {
   }
 };
 
+export async function fetchCikAndNames() {
+    const response = await fetch(`/api/cik`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch fund holdings data");
+    }
+    return response.json();
+  }
+
 export async function fetchHelloData() {
   const response = await fetch("http://localhost:8000/hello");
   if (!response.ok) {
@@ -34,31 +46,12 @@ export async function fetchHelloData() {
   return response.json();
 }
 
-// export async function fetchTestData() {
-//   const r = randomNormal(100, 10);
-//   const dates = ["2021", "2022", "2023"]
-//     .map(y => [`31-DEC-${y}`, `30-SEP-${y}`, `30-JUN-${y}`, `31-MAR-${y}`])
-//     .reduce((a, b) => [...a, ...b]);
-//   const data: FundDataPoint[] =
-//     ["Pear Computers", "Dino Oil", "Money Bank"].map(name_of_issuer => dates.map(d => {
-//       return {
-//         reporting_date: dateToQuarter(d),
-//         value: r(),
-//         name_of_issuer
-//       } as FundDataPoint;
-//     }))
-//     .reduce((a, b) => [...a, ...b])
-//     .sort((a, b) => a.reporting_date > b.reporting_date ? 1 : -1);
-//   const quarters = [...new Set(data.map(d => d.reporting_date))];
-//   return {data, quarters};
-// }
-
 export async function fetchFundData(slug: string) {
   return processFundHoldings(await fetchFundHoldings(slug));
 }
 
 export async function fetchFundHoldings(cik: string) {
-  const response = await fetch(`/api/cusip/${cik}`);
+  const response = await fetch(`/api/fundholdings/${cik}`);
   if (!response.ok) {
     throw new Error("Failed to fetch fund holdings data");
   }
@@ -68,7 +61,9 @@ export async function fetchFundHoldings(cik: string) {
 function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters: string[] , filingManager: string} {
   const filingManager = apiData[0].FILINGMANAGER_NAME;
   console.log(apiData[0].REPORTCALENDARORQUARTER);
-  const processedData: FundDataPoint[] = apiData.map(item => ({
+  const processedData: FundDataPoint[] = apiData
+  .filter(item => new Date(item.REPORTCALENDARORQUARTER).getFullYear() > 2017)
+  .map(item => ({
     reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
     value: item.VALUE,
     name_of_issuer: item.NAMEOFISSUER
@@ -100,10 +95,12 @@ export async function fetchStockHoldings(cusip: string) {
 
 // Process stock holdings data into a usable format
 function processStockHoldings(apiData: any[]): { data: StockDataPoint[]; quarters: string[] } {
-  const processedData: StockDataPoint[] = apiData.map((item) => ({
-    reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
-    value: item.VALUE,
-    name_of_fund: item.FILINGMANAGER_NAME,
+  const processedData: StockDataPoint[] = apiData
+  .filter(item => new Date(item.reporting_date).getFullYear() > 2017)
+  .map((item) => ({
+    reporting_date: dateToQuarter(item.reporting_date),
+    value: item.value,
+    name_of_fund: item.filing_manager_name,
   }));
 
   // Sort the data by reporting date
