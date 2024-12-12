@@ -3,10 +3,13 @@ import { db } from '@/lib/database';
 
 export async function GET() {
     try {
-        const cusips = await db.query('SELECT DISTINCT CUSIP FROM INFOTABLE');
-        return NextResponse.json(cusips);
+        const data = await db.query(
+            'SELECT DISTINCT id.CUSIP, id.Symbol AS ticker ' +
+            'FROM INFOTABLE it INNER JOIN INDUSTRY id ON it.CUSIP = id.CUSIP'
+        );
+        return NextResponse.json(data);
     } catch (error) {
-        console.error('Error fetching CUSIPs:', error);
+        console.error('Error fetching stock data:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

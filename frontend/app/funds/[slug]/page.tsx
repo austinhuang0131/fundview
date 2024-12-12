@@ -131,22 +131,6 @@ export default function FundDetail({
         </div>
 
         <div className="justify-center">
-          {/* Bar Chart Section */}
-          <div className="w-full lg:w-1/2 px-4 mb-8">
-            <div className="justify-center w-3/4 mx-auto ">
-              <Slider quarters={quarters} state={quarterState} range={false} />
-            </div>
-            <h2 className="text-2xl text-center mt-4">
-              Holdings during {getQuarters(quarters, quarterState[0])[0]}
-            </h2>
-            <Barchart
-              width={0.75}
-              height={400}
-              companies={companyFilter}
-              data={processDataForBarChart(data)}
-              quarter={getQuarters(quarters, quarterState[0])[0]}
-            />
-          </div>
 
           {/* Line Chart Section */}
           <div className="w-full lg:w-1/2 px-4 mb-8">
@@ -176,6 +160,22 @@ export default function FundDetail({
           <SpiderChart
               data={processDataForSpiderChart(data, getQuarters(quarters, quarterState[0])[0])}
               opt={radarChartOptions}
+            />
+          </div>
+          {/* Bar Chart Section */}
+          <div className="w-full lg:w-1/2 px-4 mb-8">
+            <div className="justify-center w-3/4 mx-auto ">
+              <Slider quarters={quarters} state={quarterState} range={false} />
+            </div>
+            <h2 className="text-2xl text-center mt-4">
+              Holdings during {getQuarters(quarters, quarterState[0])[0]}
+            </h2>
+            <Barchart
+                width={0.75}
+                height={400}
+                companies={companyFilter}
+                data={processDataForBarChart(data)}
+                quarter={getQuarters(quarters, quarterState[0])[0]}
             />
           </div>
         </div>

@@ -1,47 +1,78 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-interface CUSIPData {
-  CUSIP: string;
-  name_of_issuer: string; // Update this based on your database schema
-}
-
-async function fetchCUSIPs() {
-  const response = await fetch("/api/cusip");
-  if (!response.ok) {
-    throw new Error("Failed to fetch CUSIPs");
-  }
-  return response.json();
+interface StockData {
+    CUSIP: string;
+    ticker: string;
 }
 
 export default function StocksPage() {
-  const [cusips, setCusips] = useState<CUSIPData[]>([]);
-  const [isLoading, setLoading] = useState(true);
+    const [stockData, setStockData] = useState<StockData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const router = useRouter();
 
-  useEffect(() => {
-    fetchCUSIPs()
-        .then(setCusips)
-        .catch((error) => console.error("Error fetching CUSIPs:", error))
-        .finally(() => setLoading(false));
-  }, []);
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await fetch("/api/cusip");
+                if (!response.ok) {
+                    throw new Error("Failed to load stock data.");
+                }
+                const data = await response.json();
+                setStockData(data);
+            } catch (err) {
+                setError("Failed to load stock data.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchData();
+    }, []);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (!cusips.length) return <p>No CUSIPs available.</p>;
+    const handleSelect = (cusip: string) => {
+        router.push(`/stocks/${cusip}`);
+    };
 
-  return (
-      <div>
-        <h1>Available CUSIPs</h1>
-        <ul>
-          {cusips.map((cusip) => (
-              <li key={cusip.CUSIP}>
-                <Link href={`/stocks/${cusip.CUSIP}`}>
-                  {cusip.name_of_issuer} ({cusip.CUSIP})
-                </Link>
-              </li>
-          ))}
-        </ul>
-      </div>
-  );
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>{error}</p>;
+
+    const filteredData = searchTerm
+        ? stockData.filter((stock) =>
+            stock.ticker.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        : stockData;
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-base-200">
+            <div className="max-w-lg w-full p-6 bg-white rounded-lg shadow">
+                <h1 className="text-2xl font-bold mb-4 text-center">Select a Stock</h1>
+                <div className="form-control mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search for a stock..."
+                        className="input input-bordered w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <ul className="menu bg-base-100 rounded-box overflow-y-auto max-h-60">
+                    {filteredData.map((stock) => (
+                        <li key={stock.CUSIP}>
+                            <button
+                                className="btn btn-ghost justify-start"
+                                onClick={() => handleSelect(stock.CUSIP)}
+                            >
+                                {stock.ticker}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
 }

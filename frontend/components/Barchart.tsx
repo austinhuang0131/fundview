@@ -70,7 +70,7 @@ function Barchart(props: {
         svg.append("text")
             .attr("transform", "rotate(-90)")
             .attr("x", 0 - height / 2)
-            .attr("y", margin.left - 80)
+            .attr("y", margin.left - 103)
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .style("font-size", "14px")

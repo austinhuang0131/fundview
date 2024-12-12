@@ -2,7 +2,8 @@
 
 import {use, useEffect, useState} from "react";
 import LineChart, { DataPoint } from "@/components/line_chart_modular";
-import { fetchStockData, StockDataPoint } from "@/lib/api";
+import Barchart from "@/components/Barchart";
+import {fetchStockData, StockDataPoint} from "@/lib/api";
 import Select from "react-select";
 import Slider from "@/components/Slider";
 import { getQuarters } from "@/lib/getQuarters";
@@ -15,6 +16,14 @@ const processDataForLineChart = (data: StockDataPoint[]) => {
     })) as DataPoint[];
 };
 
+const processDataForBarChart = (data: StockDataPoint[]) => {
+    return data.map((d) => ({
+        holdingAmount: d.value,
+        stock: d.name_of_fund,
+        time: d.reporting_date,
+    }));
+};
+
 export default function StockDetail({params}: {
     params: Promise<{ slug: string }>;
 }) {
@@ -22,7 +31,7 @@ export default function StockDetail({params}: {
     const [data, setData] = useState<StockDataPoint[]>([]);
     const [isLoading, setLoading] = useState(true);
     const [quarters, setQuarters] = useState([] as string[]);
-    // const quarterState = useState([0]);
+    const quarterState = useState([0]);
     const quarterRangeState = useState([0, 0]);
     const funds = [...new Set(data.map((d) => d.name_of_fund))].map(
         (c) => ({ value: c as string, label: c as string })
@@ -35,6 +44,7 @@ export default function StockDetail({params}: {
             setQuarters(q);
             setData(stockData);
             setLoading(false);
+            quarterState[1]([q.length - 1]);
             quarterRangeState[1]([0, q.length - 1]);
         });
     }, []);
@@ -89,31 +99,47 @@ export default function StockDetail({params}: {
                 </div>
             </div>
             <div className="justify-center">
-          {/* Bar Chart Section */}
-            <div className="w-full lg:w-1/2 px-4 mb-8">
-                <div className="justify-center w-3/4 mx-auto ">
-                <Slider
-                    quarters={quarters}
-                    state={quarterRangeState}
-                    range={true}
-                />
+
+                <div className="w-full lg:w-1/2 px-4 mb-8">
+                    <div className="justify-center w-3/4 mx-auto ">
+                        <Slider
+                            quarters={quarters}
+                            state={quarterRangeState}
+                            range={true}
+                        />
+                    </div>
+                    <h2 className="text-2xl text-center mt-4">
+                        Holdings during{" "}
+                        {getQuarters(quarters, quarterRangeState[0])
+                            .filter((_, i, a) => i === 0 || i === a.length - 1)
+                            .join(" and ")}
+                    </h2>
+                    <LineChart
+                        data={processDataForLineChart(data)}
+                        width={0.8}
+                        height={400}
+                        groupKey="FundName"
+                        // title={`Holdings Over Time for ${slug}`}
+                        companies={fundFilter}
+                        quarters={getQuarters(quarters, quarterRangeState[0])}
+                    />
                 </div>
-                <h2 className="text-2xl text-center mt-4">
-                Holdings during{" "}
-                {getQuarters(quarters, quarterRangeState[0])
-                .filter((_, i, a) => i === 0 || i === a.length - 1)
-                .join(" and ")}
-                </h2>
-                <LineChart
-                    data={processDataForLineChart(data)}
-                    width={0.8}
-                    height={400}
-                    groupKey="FundName"
-                    // title={`Holdings Over Time for ${slug}`}
-                    companies={fundFilter}
-                    quarters={getQuarters(quarters, quarterRangeState[0])}
-                />
-            </div>
+                {/* Bar Chart Section */}
+                <div className="w-full lg:w-1/2 px-4 mb-8">
+                    <div className="justify-center w-3/4 mx-auto ">
+                        <Slider quarters={quarters} state={quarterState} range={false}/>
+                    </div>
+                    <h2 className="text-2xl text-center mt-4">
+                        Holdings during {getQuarters(quarters, quarterState[0])[0]}
+                    </h2>
+                    <Barchart
+                        width={0.75}
+                        height={400}
+                        companies={fundFilter}
+                        data={processDataForBarChart(data)}
+                        quarter={getQuarters(quarters, quarterState[0])[0]}
+                    />
+                </div>
             </div>
         </div>
     );
