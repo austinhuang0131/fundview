@@ -311,7 +311,7 @@ function SpiderChart(props: { data: DataInput, opt: Cfg }) {
 
 		//Call function to draw the Radar chart
 		RadarChart(ref.current, props.data, windowWidth, props.opt);
-    }, [props.data, props.opt]);
+    }, [props.data, props.opt, windowWidth]);
 
     return <svg width={props.opt.w ? (props.opt.w * windowWidth) : windowWidth} height={props.opt.h} id="spiderchart" ref={ref} />;
 };
