@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 
 const fundHoldingsQuery = `
-SELECT 
-    it.NAMEOFISSUER AS name_of_issuer,
-    it.TITLEOFCLASS AS title_of_class,
+SELECT
     it.CUSIP AS cusip,
-    it.VALUE AS value,
+    CAST(SUM(it.VALUE) AS SIGNED) AS value,
     cp.REPORTCALENDARORQUARTER AS reporting_date,
     cp.FILINGMANAGER_NAME AS filing_manager_name,
     sub.CIK AS cik,
@@ -14,7 +12,13 @@ SELECT
 FROM ThirteenF.INFOTABLE AS it
 INNER JOIN ThirteenF.COVERPAGE AS cp ON cp.ACCESSION_NUMBER = it.ACCESSION_NUMBER
 INNER JOIN ThirteenF.SUBMISSION AS sub ON sub.ACCESSION_NUMBER = it.ACCESSION_NUMBER
-WHERE it.CUSIP = ?;
+WHERE it.CUSIP = ? AND REPORTCALENDARORQUARTER < '2022-12-31'
+GROUP BY 
+    it.CUSIP,
+    cp.REPORTCALENDARORQUARTER,
+    cp.FILINGMANAGER_NAME,
+    sub.CIK,
+    sub.PERIODOFREPORT;
 `;
 
 export async function GET(
