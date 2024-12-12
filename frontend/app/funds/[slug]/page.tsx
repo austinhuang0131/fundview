@@ -73,7 +73,7 @@ export default function FundDetail({
 
   const radarChartOptions = {
     w: 0.75,
-    // h: height / 3,
+    h: 400,
     // margin: margin,
     maxValue: 1,
     // levels: 5,
