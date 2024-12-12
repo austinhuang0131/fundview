@@ -125,7 +125,7 @@ export default function FundDetail({
         <div className="justify-center">
           {/* Bar Chart Section */}
           <div className="w-full lg:w-1/2 px-4 mb-8">
-            <div className="w-3/4 mx-auto">
+            <div className="justify-center w-3/4 mx-auto ">
               <Slider quarters={quarters} state={quarterState} range={false} />
             </div>
             <h2 className="text-2xl text-center mt-4">

@@ -28,7 +28,7 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
     width = width * windowWidth;
 
     useEffect(() => {
-        const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 100 };
 
         // Clear previous chart
         d3.select(ref.current).selectAll("*").remove();
@@ -39,7 +39,7 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
         const yRange = yMax - yMin;
 
         // Define scales
-        const legendPadding = 120
+        const legendPadding = 200
         const x = d3.scaleBand()
             .domain(quarters ?? [...new Set(data.map((d) => d.time))])
             .range([margin.left, width - margin.right - legendPadding]);
@@ -86,7 +86,7 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
         svg.append("text")
             .attr("transform", "rotate(-90)")
             .attr("x", 0 - height / 2)
-            .attr("y", margin.left -50)
+            .attr("y", margin.left - 80)
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .style("font-size", "14px")
@@ -104,7 +104,7 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
             companies = [...new Set(
                 data
                     .filter(d => d.time == quarters[quarters.length - 1])
-                    .sort((a, b) => a.holdings - b.holdings).map(d => d[groupKey] as string)
+                    .sort((a, b) => b.holdings - a.holdings).map(d => d[groupKey] as string)
             )].slice(0, 10);
         data = data.filter(d => companies.indexOf(d[groupKey] as string) > -1);
 
