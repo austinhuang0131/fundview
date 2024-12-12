@@ -108,7 +108,7 @@ export default function StockDetail({params}: {
                             range={true}
                         />
                     </div>
-                    <h2 className="text-2xl text-center mt-4">
+                    <h2 className="text-2xl text-center font-bold mt-4 align-center">
                         Holdings during{" "}
                         {getQuarters(quarters, quarterRangeState[0])
                             .filter((_, i, a) => i === 0 || i === a.length - 1)
@@ -129,7 +129,7 @@ export default function StockDetail({params}: {
                     <div className="justify-center w-3/4 mx-auto ">
                         <Slider quarters={quarters} state={quarterState} range={false}/>
                     </div>
-                    <h2 className="text-2xl text-center mt-4">
+                    <h2 className="text-2xl text-center font-bold mt-4 align-center">
                         Holdings during {getQuarters(quarters, quarterState[0])[0]}
                     </h2>
                     <Barchart

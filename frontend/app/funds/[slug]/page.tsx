@@ -81,10 +81,10 @@ export default function FundDetail({
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-4xl font-bold text-center mb-4">
+      <h1 className="text-4xl font-bold text-center mb-4 space-y-4">
         Fund Details for {filingManager}
       </h1>
-      <p className="text-lg text-center mb-6">
+      <p className="text-lg font-bold text-center mb-6">
         View detailed information about fund {filingManager}.
       </p>
 
@@ -141,7 +141,7 @@ export default function FundDetail({
                 range={true}
               />
             </div>
-            <h2 className="text-2xl text-center mt-4">
+            <h2 className="text-2xl text-center font-bold mt-4 align-center">
               Trend of holding between{" "}
               {getQuarters(quarters, quarterRangeState[0])
                 .filter((_, i, a) => i === 0 || i === a.length - 1)
@@ -167,7 +167,7 @@ export default function FundDetail({
             <div className="justify-center w-3/4 mx-auto ">
               <Slider quarters={quarters} state={quarterState} range={false} />
             </div>
-            <h2 className="text-2xl text-center mt-4">
+            <h2 className="text-2xl text-center font-bold mt-4 align-center">
               Holdings during {getQuarters(quarters, quarterState[0])[0]}
             </h2>
             <Barchart
