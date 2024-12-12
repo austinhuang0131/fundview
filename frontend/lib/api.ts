@@ -59,7 +59,8 @@ export async function fetchFundHoldings(cik: string) {
   return response.json();
 }
 
-function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters: string[] } {
+function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters: string[] , filingManager: string} {
+  const filingManager = apiData[0].FILINGMANAGER_NAME;
   console.log(apiData[0].REPORTCALENDARORQUARTER);
   const processedData: FundDataPoint[] = apiData.map(item => ({
     reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
@@ -74,5 +75,5 @@ function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters:
   const quarters = [...new Set(processedData.map(d => d.reporting_date))];
   console.log(quarters);
 
-  return { data: processedData, quarters };
+  return { data: processedData, quarters, filingManager};
 }
