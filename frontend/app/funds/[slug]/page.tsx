@@ -7,6 +7,7 @@ import { FundDataPoint, fetchFundData } from "@/lib/api";
 import { db } from "@/lib/database";
 import { use, useEffect, useState } from "react";
 import Select from "react-select";
+import { getQuarters } from "../../../lib/getQuarters";
 
 const processDataForLineChart = (data: FundDataPoint[]) => {
   return data
@@ -24,17 +25,6 @@ const processDataForBarChart = (data: FundDataPoint[]) => {
     stock: d.name_of_issuer,
     time: d.reporting_date,
   }));
-};
-
-const getQuarters = (quarters: string[], indices: number[]) => {
-  switch (indices.length) {
-    case 0:
-      return [];
-    case 1:
-      return [quarters[indices[0]]];
-    default:
-      return quarters.slice(indices[0], indices[1] + 1);
-  }
 };
 
 export default function FundDetail({
