@@ -53,9 +53,7 @@ export default function FundDetail({
   const companies = [...new Set(data.map((d) => d.name_of_issuer))].map(
     (c: string) => ({ value: c, label: c })
   );
-  const [companyFilter, setCompanyFilter] = useState(
-    companies.slice(0, 10).map((v) => v.value)
-  );
+  const [companyFilter, setCompanyFilter] = useState([] as string[]);
 
   useEffect(() => {
     fetchFundData(slug).then(({ data, quarters: q , filingManager}) => {

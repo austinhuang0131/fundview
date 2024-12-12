@@ -7,44 +7,37 @@ import Select from "react-select";
 import Slider from "@/components/Slider";
 import { getQuarters } from "@/lib/getQuarters";
 
+const processDataForLineChart = (data: StockDataPoint[]) => {
+    return data.map((row: StockDataPoint) => ({
+        time: row.reporting_date,
+        holdings: row.value,
+        FundName: row.name_of_fund,
+    })) as DataPoint[];
+};
+
 export default function StockDetail({params}: {
     params: Promise<{ slug: string }>;
 }) {
     const slug = use(params).slug;
-    const [data, setData] = useState<DataPoint[]>([]);
+    const [data, setData] = useState<StockDataPoint[]>([]);
     const [isLoading, setLoading] = useState(true);
     const [quarters, setQuarters] = useState([] as string[]);
     // const quarterState = useState([0]);
     const quarterRangeState = useState([0, 0]);
-    const funds = [...new Set(data.map((d) => d.FundName))].map(
+    const funds = [...new Set(data.map((d) => d.name_of_fund))].map(
         (c) => ({ value: c as string, label: c as string })
       );
-    const [fundFilter, setFundFilter] = useState(
-        funds.slice(0, 10).map((v) => v.value)
-    );
+    const [fundFilter, setFundFilter] = useState([] as string[]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Use the fetchStockData function from api.ts
-                const { data: stockData, quarters: q } = await fetchStockData(slug);
-
-                // Process data for the line chart
-                const processedData = stockData.map((row: StockDataPoint) => ({
-                    time: row.reporting_date,
-                    holdings: row.value,
-                    FundName: row.name_of_fund,
-                }));
-                setQuarters(q);
-                setData(processedData);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching stock data:", error);
-            }
-        };
-
-        if (slug) fetchData();
-    }, [slug]);
+        fetchStockData(slug).then(({ data: stockData, quarters: q }) => {
+            // Process data for the line chart
+            setQuarters(q);
+            setData(stockData);
+            setLoading(false);
+            quarterRangeState[1]([0, q.length - 1]);
+        });
+    }, []);
 
     if (isLoading) return <p>Loading...</p>;
     if (!data.length) return <p>No data found for CUSIP {slug}</p>;
@@ -112,11 +105,11 @@ export default function StockDetail({params}: {
                 .join(" and ")}
                 </h2>
                 <LineChart
-                    data={data}
+                    data={processDataForLineChart(data)}
                     width={0.8}
                     height={400}
                     groupKey="FundName"
-                    title={`Holdings Over Time for ${slug}`}
+                    // title={`Holdings Over Time for ${slug}`}
                     companies={fundFilter}
                     quarters={getQuarters(quarters, quarterRangeState[0])}
                 />
