@@ -48,7 +48,7 @@ function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters:
   const filingManager = apiData[0].FILINGMANAGER_NAME;
   console.log(apiData[0].REPORTCALENDARORQUARTER);
   const processedData: FundDataPoint[] = apiData
-  .filter(item => new Date(item.reporting_date).getFullYear() > 2017)
+  .filter(item => new Date(item.REPORTCALENDARORQUARTER).getFullYear() > 2017)
   .map(item => ({
     reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
     value: item.VALUE,
