@@ -54,7 +54,7 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
             .range([margin.left, width - margin.right - legendPadding]);
 
         const y = d3.scaleLinear()
-            .domain([yMin - 0.1 * yRange, yMax]) // Scale 10% below min
+            .domain([yMin - 0.1 * yRange, yMax + 0.1 * yRange]) // Scale 10% below min
             .range([height - margin.bottom, margin.top]);
 
         const color = d3.scaleOrdinal<string>()
@@ -95,7 +95,7 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
         svg.append("text")
             .attr("transform", "rotate(-90)")
             .attr("x", 0 - height / 2)
-            .attr("y", margin.left - 80)
+            .attr("y", margin.left - 90)
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .style("font-size", "14px")

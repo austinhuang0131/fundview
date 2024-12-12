@@ -27,18 +27,18 @@ function Barchart(props: {
             top5Data = top5Data.slice(0, 5);
 
         // Set up dimensions and margins
-        const margin = { top: 20, right: 30, bottom: 40, left: 35 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 50 };
         const width = canvasWidth - margin.left - margin.right;
         const height = props.height - margin.top - margin.bottom;
 
         // Create scales
         const x = d3.scaleBand()
             .domain(top5Data.map(d => d.stock))
-            .range([0, width])
+            .range([margin.left, width])
             .padding(0.2);
 
         const y = d3.scaleLinear()
-            .domain([0, d3.max(props.data, d => d.holdingAmount)!])
+            .domain([0, d3.max(top5Data, (d) => d.holdingAmount) || 0])
             .nice()
             .range([height, 0]);
 
@@ -65,6 +65,17 @@ function Barchart(props: {
         axesContainer.append("g")
             .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y));
+
+        // Add Y-axis label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("x", 0 - height / 2)
+            .attr("y", margin.left - 80)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("font-weight", "bold")
+            .text("Holdings ($)");
 
         // Define a color scale
         // const color = d3.scaleOrdinal<string>()
