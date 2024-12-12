@@ -14,8 +14,8 @@ export default function StockDetail({params}: {
     const [data, setData] = useState<DataPoint[]>([]);
     const [isLoading, setLoading] = useState(true);
     const [quarters, setQuarters] = useState([] as string[]);
-    const quarterState = useState([0]);
-    // const quarterRangeState = useState([0, 0]);
+    // const quarterState = useState([0]);
+    const quarterRangeState = useState([0, 0]);
     const funds = [...new Set(data.map((d) => d.FundName))].map(
         (c) => ({ value: c as string, label: c as string })
       );
@@ -99,10 +99,17 @@ export default function StockDetail({params}: {
           {/* Bar Chart Section */}
             <div className="w-full lg:w-1/2 px-4 mb-8">
                 <div className="justify-center w-3/4 mx-auto ">
-                <Slider quarters={quarters} state={quarterState} range={false} />
+                <Slider
+                    quarters={quarters}
+                    state={quarterRangeState}
+                    range={true}
+                />
                 </div>
                 <h2 className="text-2xl text-center mt-4">
-                Holdings during {getQuarters(quarters, quarterState[0])[0]}
+                Holdings during{" "}
+                {getQuarters(quarters, quarterRangeState[0])
+                .filter((_, i, a) => i === 0 || i === a.length - 1)
+                .join(" and ")}
                 </h2>
                 <LineChart
                     data={data}
@@ -111,7 +118,7 @@ export default function StockDetail({params}: {
                     groupKey="FundName"
                     title={`Holdings Over Time for ${slug}`}
                     companies={fundFilter}
-                    quarters={quarters}
+                    quarters={getQuarters(quarters, quarterRangeState[0])}
                 />
             </div>
             </div>
