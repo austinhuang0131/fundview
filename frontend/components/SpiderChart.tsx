@@ -34,9 +34,7 @@ type Datum = {
     value: number;
 };
 
-function RadarChart(r: null, data: DataInput, options: Cfg | undefined) {
-	const { width: windowWidth } = useWindowDimensions();
-
+function RadarChart(r: null, data: DataInput, windowWidth: number, options: Cfg | undefined) {
 	const cfg = {
         w: (options?.w ?? 1) * windowWidth,				//Width of the circle
         h: options?.h ?? 600,				//Height of the circle
@@ -301,6 +299,7 @@ function RadarChart(r: null, data: DataInput, options: Cfg | undefined) {
 
 function SpiderChart(props: { data: DataInput, opt: Cfg }) {
     const ref = useRef(null);
+	const { width: windowWidth } = useWindowDimensions();
 
     useEffect(() => {
 
@@ -312,10 +311,10 @@ function SpiderChart(props: { data: DataInput, opt: Cfg }) {
 			// .range(["#EDC951","#CC333F","#00A0B0"]);
 
 		//Call function to draw the Radar chart
-		RadarChart(ref.current, props.data, props.opt);
+		RadarChart(ref.current, props.data, windowWidth, props.opt);
     }, [props.data, props.opt]);
 
-    return <svg width={props.opt.w} height={props.opt.h} id="spiderchart" ref={ref} />;
+    return <svg width={props.opt.w ? (props.opt.w * windowWidth) : windowWidth} height={props.opt.h} id="spiderchart" ref={ref} />;
 };
 
 export default SpiderChart;
