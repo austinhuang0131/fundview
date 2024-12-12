@@ -33,6 +33,15 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
         // Clear previous chart
         d3.select(ref.current).selectAll("*").remove();
 
+        // filter data
+        if (companies.length == 0)
+            companies = [...new Set(
+                data
+                    .filter(d => d.time == quarters[quarters.length - 1])
+                    .sort((a, b) => b.holdings - a.holdings).map(d => d[groupKey] as string)
+            )].slice(0, 10);
+        data = data.filter(d => companies.indexOf(d[groupKey] as string) > -1);
+
         // Calculate y-axis dynamic minimum value (10% lower than the range)
         const yMin = d3.min(data, (d: DataPoint) => d.holdings) ?? 0;
         const yMax = d3.max(data, (d: DataPoint) => d.holdings) ?? 0;
@@ -47,14 +56,6 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
         const y = d3.scaleLinear()
             .domain([yMin - 0.1 * yRange, yMax]) // Scale 10% below min
             .range([height - margin.bottom, margin.top]);
-
-        if (companies.length == 0)
-            companies = [...new Set(
-                data
-                    .filter(d => d.time == quarters[quarters.length - 1])
-                    .sort((a, b) => b.holdings - a.holdings).map(d => d[groupKey] as string)
-            )].slice(0, 10);
-        data = data.filter(d => companies.indexOf(d[groupKey] as string) > -1);
 
         const color = d3.scaleOrdinal<string>()
             .domain(companies)
