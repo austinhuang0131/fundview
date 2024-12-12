@@ -80,6 +80,7 @@ def create_index(query, index_name):
 
 def create_indexes():
     index_queries = [
+        ("CREATE INDEX idx_industry_cusip ON INDUSTRY(CUSIP);", "INDUSTRY.CUSIP"),
         ("CREATE INDEX idx_submission_accession_number ON SUBMISSION(ACCESSION_NUMBER);", "SUBMISSION.ACCESSION_NUMBER"),
         ("CREATE INDEX idx_submission_filing_date ON SUBMISSION(FILING_DATE);", "SUBMISSION.FILING_DATE"),
         ("CREATE INDEX idx_submission_cik ON SUBMISSION(CIK);", "SUBMISSION.CIK"),
@@ -88,7 +89,6 @@ def create_indexes():
         ("CREATE INDEX idx_infotable_accession_number ON INFOTABLE(ACCESSION_NUMBER);", "INFOTABLE.ACCESSION_NUMBER"),
         ("CREATE INDEX idx_infotable_infotable_sk ON INFOTABLE(INFOTABLE_SK);", "INFOTABLE.INFOTABLE_SK"),
         ("CREATE INDEX idx_infotable_name_of_issuer ON INFOTABLE(NAMEOFISSUER);", "INFOTABLE.NAMEOFISSUER"),
-        ("CREATE INDEX idx_infotable_title_of_class ON INFOTABLE(TITLEOFCLASS);", "INFOTABLE.TITLEOFCLASS"),
         ("CREATE INDEX idx_infotable_cusip ON INFOTABLE(CUSIP);", "INFOTABLE.CUSIP"),
         ("CREATE INDEX idx_infotable_value ON INFOTABLE(VALUE);", "INFOTABLE.VALUE")
     ]

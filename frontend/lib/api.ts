@@ -67,7 +67,8 @@ function processFundHoldings(apiData: any[]): { data: FundDataPoint[], quarters:
   .map(item => ({
     reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
     value: item.VALUE,
-    name_of_issuer: item.NAMEOFISSUER
+    name_of_issuer: item.NAMEOFISSUER,
+    industry: item.SECTOR
   }));
 
   // Sort the data by reporting date

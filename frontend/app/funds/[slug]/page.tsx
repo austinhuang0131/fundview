@@ -148,10 +148,6 @@ export default function FundDetail({
               data={processDataForBarChart(data)}
               quarter={getQuarters(quarters, quarterState[0])[0]}
             />
-            <SpiderChart
-              data={processDataForSpiderChart(data, getQuarters(quarters, quarterState[0])[0])}
-              opt={radarChartOptions}
-            />
           </div>
 
           {/* Line Chart Section */}
@@ -176,6 +172,12 @@ export default function FundDetail({
               companies={companyFilter}
               data={processDataForLineChart(data)}
               quarters={getQuarters(quarters, quarterRangeState[0])}
+            />
+          </div>
+          <div>
+          <SpiderChart
+              data={processDataForSpiderChart(data, getQuarters(quarters, quarterState[0])[0])}
+              opt={radarChartOptions}
             />
           </div>
         </div>
