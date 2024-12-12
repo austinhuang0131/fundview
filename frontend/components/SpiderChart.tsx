@@ -52,9 +52,8 @@ function RadarChart(r: null, data: DataInput, windowWidth: number, options: Cfg 
 	};
 	
 	//If the supplied maxValue is smaller than the actual one, replace by the max in the data
-	const maxValue = Math.max(cfg.maxValue,
-        d3.max(data, function(i){return d3.max(i.map(function(o){return o.value;}))})!
-    );
+	const maxValue = 
+        d3.max(data, function(i){return d3.max(i.map(function(o){return o.value;}))})! * 1.1;
 		
 	const allAxis = (data[0].map(function(i){return i.axis})),	//Names of each axis
 		total = allAxis.length,					//The number of different axes
