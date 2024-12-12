@@ -2,6 +2,7 @@
 
 "use client";
 
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
@@ -33,9 +34,9 @@ type Datum = {
     value: number;
 };
 
-function RadarChart(r: null, data: DataInput, options: Cfg | undefined) {
+function RadarChart(r: null, data: DataInput, windowWidth: number, options: Cfg | undefined) {
 	const cfg = {
-        w: options?.w ?? 600,				//Width of the circle
+        w: (options?.w ?? 1) * windowWidth,				//Width of the circle
         h: options?.h ?? 600,				//Height of the circle
         margin: options?.margin ?? {top: 20, right: 20, bottom: 20, left: 20}, //The margins of the SVG
         levels: options?.levels ?? 3,				//How many levels or inner circles should there be drawn
@@ -298,6 +299,7 @@ function RadarChart(r: null, data: DataInput, options: Cfg | undefined) {
 
 function SpiderChart(props: { data: DataInput, opt: Cfg }) {
     const ref = useRef(null);
+	const { width: windowWidth } = useWindowDimensions();
 
     useEffect(() => {
 
@@ -309,10 +311,10 @@ function SpiderChart(props: { data: DataInput, opt: Cfg }) {
 			// .range(["#EDC951","#CC333F","#00A0B0"]);
 
 		//Call function to draw the Radar chart
-		RadarChart(ref.current, props.data, props.opt);
+		RadarChart(ref.current, props.data, windowWidth, props.opt);
     }, [props.data, props.opt]);
 
-    return <svg width={props.opt.w} height={props.opt.h} id="spiderchart" ref={ref} />;
+    return <svg width={props.opt.w ? (props.opt.w * windowWidth) : windowWidth} height={props.opt.h} id="spiderchart" ref={ref} />;
 };
 
 export default SpiderChart;

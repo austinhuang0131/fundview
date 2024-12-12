@@ -7,6 +7,7 @@ import { FundDataPoint, fetchFundData } from "@/lib/api";
 import { use, useEffect, useState } from "react";
 import Select from "react-select";
 import { getQuarters } from "../../../lib/getQuarters";
+import SpiderChart, { Cfg } from "@/components/SpiderChart";
 
 const processDataForLineChart = (data: FundDataPoint[]) => {
   return data
@@ -25,6 +26,16 @@ const processDataForBarChart = (data: FundDataPoint[]) => {
     time: d.reporting_date,
   }));
 };
+
+const processDataForSpiderChart = (data: FundDataPoint[], quarter: string) => {
+  const aum = data.filter(d => d.reporting_date == quarter).reduce((a, d) => a + d.value, 0);
+  const cleanedData = data.filter(d => d.industry !== undefined);
+  return [[...new Set(cleanedData.map(d => d.industry))].map((i) => ({
+    axis: i!,
+    value: data.filter(d => d.reporting_date == quarter && d.industry == i)
+      .reduce((a, d) => a + d.value, 0) / aum
+  }))];
+}
 
 export default function FundDetail({
   params,
@@ -59,6 +70,16 @@ export default function FundDetail({
 
   if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>No data!!!</p>;
+
+  const radarChartOptions = {
+    w: 0.75,
+    // h: height / 3,
+    // margin: margin,
+    maxValue: 1,
+    // levels: 5,
+    // roundStrokes: false,
+    // color: color
+  } as Cfg;
 
   return (
     <div className="container mx-auto p-6">
@@ -126,6 +147,10 @@ export default function FundDetail({
               companies={companyFilter}
               data={processDataForBarChart(data)}
               quarter={getQuarters(quarters, quarterState[0])[0]}
+            />
+            <SpiderChart
+              data={processDataForSpiderChart(data, getQuarters(quarters, quarterState[0])[0])}
+              opt={radarChartOptions}
             />
           </div>
 

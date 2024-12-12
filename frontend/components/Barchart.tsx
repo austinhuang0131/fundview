@@ -67,9 +67,9 @@ function Barchart(props: {
             .call(d3.axisLeft(y));
 
         // Define a color scale
-        const color = d3.scaleOrdinal<string>()
-            .domain(props.data.map(d => d.stock))
-            .range(d3.schemeCategory10);
+        // const color = d3.scaleOrdinal<string>()
+        //     .domain(props.data.map(d => d.stock))
+        //     .range(d3.schemeCategory10);
 
         // Add points with tooltips
         const tooltip = d3
@@ -104,7 +104,7 @@ function Barchart(props: {
             .attr("y", d => y(d.holdingAmount))
             .attr("width", x.bandwidth())
             .attr("height", d => height - y(d.holdingAmount))
-            .attr("fill", (d) => color(d.stock)); // Assign color based on stock name
+            .attr("fill", "steelblue"); 
         
         dataRects
             .on("mouseover", (event: MouseEvent, d: BarChartDataPoint) => {
