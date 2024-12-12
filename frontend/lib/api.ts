@@ -10,6 +10,12 @@ export type StockDataPoint = {
   name_of_fund: string
 }
 
+export type CIKNAME = {
+  CIK: string,
+  NAME: string
+}
+
+
 const dateToQuarter = (date: string) => {
   const matches = date.match(/^(\d{4})-(\d{2})-(\d{2})/)!;
   switch (matches[2]) {
@@ -23,6 +29,14 @@ const dateToQuarter = (date: string) => {
       return `${matches[1]} Q1`;
   }
 };
+
+export async function fetchCikAndNames() {
+    const response = await fetch(`/api/cik`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch fund holdings data");
+    }
+    return response.json();
+  }
 
 export async function fetchHelloData() {
   const response = await fetch("http://localhost:8000/hello");
