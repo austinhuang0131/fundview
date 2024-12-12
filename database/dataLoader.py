@@ -49,10 +49,10 @@ def load_indicators():
     query = f"""
         LOAD DATA LOCAL INFILE '{INDUSTRY_FILE}'
         INTO TABLE INDUSTRY
-        FIELDS TERMINATED BY ','
+        FIELDS TERMINATED BY ',' ENCLOSED BY '"'
         LINES TERMINATED BY '\\n'
         IGNORE 1 LINES
-        (@dummy, CIK, CompanyName, Symbol, Exchange, CUSIP, AssetType, Sector);
+        (CIK, CompanyName, Symbol, Exchange, CUSIP, AssetType, Sector);
     """
     try:
         with connection.cursor() as cursor:
