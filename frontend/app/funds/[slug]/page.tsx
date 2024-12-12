@@ -3,7 +3,7 @@
 import Barchart from "@/components/Barchart";
 import Slider from "@/components/Slider";
 import LineChart, { DataPoint } from "@/components/line_chart_modular";
-import { FundDataPoint, fetchData } from "@/lib/api";
+import { FundDataPoint, fetchFundData } from "@/lib/api";
 import { db } from "@/lib/database";
 import { use, useEffect, useState } from "react";
 import Select from "react-select";
@@ -58,7 +58,7 @@ export default function FundDetail({
   );
 
   useEffect(() => {
-    fetchData(slug).then(({ data, quarters: q , filingManager}) => {
+    fetchFundData(slug).then(({ data, quarters: q , filingManager}) => {
       setData(data);
       setLoading(false);
       setQuarters(q);

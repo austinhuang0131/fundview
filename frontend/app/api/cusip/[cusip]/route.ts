@@ -25,10 +25,10 @@ export async function GET(
         const { cusip } = await context.params;
 
         const fundHoldings = await db.query(fundHoldingsQuery, [cusip]);
-        console.log(`Funds fetched successfully for CIK: ${cusip}`);
-        return NextResponse.json({ data: fundHoldings });
+        console.log(`Funds fetched successfully for CUSIP: ${cusip}`);
+        return NextResponse.json(fundHoldings);
     } catch (error) {
-        console.error("Error fetching funds:", error);
+        console.error("Error fetching stock:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

@@ -58,7 +58,7 @@ export async function fetchFundData(slug: string) {
 }
 
 export async function fetchFundHoldings(cik: string) {
-  const response = await fetch(`/api/cusip/${cik}`);
+  const response = await fetch(`/api/fundholdings/${cik}`);
   if (!response.ok) {
     throw new Error("Failed to fetch fund holdings data");
   }
@@ -101,9 +101,9 @@ export async function fetchStockHoldings(cusip: string) {
 // Process stock holdings data into a usable format
 function processStockHoldings(apiData: any[]): { data: StockDataPoint[]; quarters: string[] } {
   const processedData: StockDataPoint[] = apiData.map((item) => ({
-    reporting_date: dateToQuarter(item.REPORTCALENDARORQUARTER),
-    value: item.VALUE,
-    name_of_fund: item.FILINGMANAGER_NAME,
+    reporting_date: dateToQuarter(item.reporting_date),
+    value: item.value,
+    name_of_fund: item.filing_manager_name,
   }));
 
   // Sort the data by reporting date
