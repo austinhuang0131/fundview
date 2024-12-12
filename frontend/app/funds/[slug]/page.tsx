@@ -4,7 +4,6 @@ import Barchart from "@/components/Barchart";
 import Slider from "@/components/Slider";
 import LineChart, { DataPoint } from "@/components/line_chart_modular";
 import { FundDataPoint, fetchFundData } from "@/lib/api";
-import { db } from "@/lib/database";
 import { use, useEffect, useState } from "react";
 import Select from "react-select";
 import { getQuarters } from "../../../lib/getQuarters";
