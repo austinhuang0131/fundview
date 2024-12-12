@@ -18,7 +18,7 @@ interface LineChartProps {
     height: number; // Chart height, absolute value
     groupKey: string; // Key to group lines (e.g., "stock", "fund", "industry")
     title?: string; // Optional chart title
-    quarters?: string[]; // filter by quarters
+    quarters: string[]; // filter by quarters
     companies: string[];
 }
 
@@ -29,10 +29,6 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
 
     useEffect(() => {
         const margin = { top: 20, right: 30, bottom: 40, left: 50 };
-
-        if (companies.length == 0) {
-            companies = [...new Set(data.map(d => d[groupKey] as string))].slice(0, 10);
-        }
 
         // Clear previous chart
         d3.select(ref.current).selectAll("*").remove();
@@ -102,8 +98,14 @@ function LineChart({ data, width, height, groupKey, title, quarters, companies }
             .x((d: DataPoint) => (x(d.time) || 0) + x.bandwidth() / 2)
             .y((d: DataPoint) => y(d.holdings));
 
-        if (quarters)
+        if (quarters.length > 0)
             data = data.filter(d => quarters.indexOf(d.time) > -1);
+        if (companies.length == 0)
+            companies = [...new Set(
+                data
+                    .filter(d => d.time == quarters[quarters.length - 1])
+                    .sort((a, b) => a.holdings - b.holdings).map(d => d[groupKey] as string)
+            )].slice(0, 10);
         data = data.filter(d => companies.indexOf(d[groupKey] as string) > -1);
 
         const groupedData = Array.from(
