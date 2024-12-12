@@ -41,6 +41,28 @@ def initialize_db():
 SUBMISSION_DIR = os.path.join(BASE_DIR, 'EdgarDataSource/SUBMISSION')
 COVERPAGE_DIR = os.path.join(BASE_DIR, 'EdgarDataSource/COVERPAGE')
 INFOTABLE_DIR = os.path.join(BASE_DIR, 'EdgarDataSource/INFOTABLE')
+INDUSTRY_FILE = os.path.abspath(os.path.join(BASE_DIR, 'indData.csv'))
+
+def load_indicators():
+    print("Loading industry data...")
+    connection = pymysql.connect(**connection_config)
+    query = f"""
+        LOAD DATA LOCAL INFILE '{INDUSTRY_FILE}'
+        INTO TABLE INDUSTRY
+        FIELDS TERMINATED BY ','
+        LINES TERMINATED BY '\\n'
+        IGNORE 1 LINES
+        (@dummy, CIK, CompanyName, Symbol, Exchange, CUSIP, AssetType, Sector);
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+        connection.commit()
+        print("Industry data loaded successfully.")
+    except Exception as e:
+        print(f"Error loading industry data: {str(e)}")
+    finally:
+        connection.close()
 
 def create_index(query, index_name):
     connection = pymysql.connect(**connection_config)
@@ -109,6 +131,9 @@ def load_file(args):
 if __name__ == "__main__":
     # Initialize the database schema
     initialize_db()
+
+    # Load industry data
+    load_indicators()
 
     # Prepare tasks for multiprocessing
     tasks = []
